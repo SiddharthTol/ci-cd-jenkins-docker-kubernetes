@@ -3,6 +3,7 @@ pipeline {
   environment {
     KUBECONFIG = '/var/jenkins_home/.kube_rw/config'
     PATH = "/usr/local/bin:/usr/bin:/bin:${PATH}"
+    MINIKUBE_HOME = '/tmp'
   }
   stages {
     stage('Clone Repo') {
@@ -18,7 +19,10 @@ pipeline {
     }
     stage('Load into Minikube') {
       steps {
-        sh 'minikube image load devops-app'
+        sh '''
+          docker save devops-app | \
+          docker exec -i minikube docker load
+        '''
       }
     }
     stage('Deploy to Kubernetes') {
@@ -28,9 +32,9 @@ pipeline {
     }
     stage('Verify Deployment') {
       steps {
+        sh 'kubectl rollout status deployment/devops-app'
         sh 'kubectl get pods'
         sh 'kubectl get services'
-        sh 'kubectl rollout status deployment/devops-app'
       }
     }
   }
