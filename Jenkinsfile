@@ -2,6 +2,7 @@ pipeline {
   agent any
   environment {
     KUBECONFIG = '/var/jenkins_home/.kube_rw/config'
+    PATH = "/usr/local/bin:/usr/bin:/bin:${PATH}"
   }
   stages {
     stage('Clone Repo') {
