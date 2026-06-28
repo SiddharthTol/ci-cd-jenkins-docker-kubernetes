@@ -8,6 +8,59 @@
 An automated CI/CD pipeline that builds a Node.js application into a Docker image and deploys it to a Kubernetes cluster, triggered automatically on every Git push. Implements zero-downtime rolling deployments with health checks.
 
 ## Architecture
+┌─────────────┐     ┌──────────┐     ┌────────────┐     ┌─────────────┐
+
+│   Developer  │────▶│  GitHub  │────▶│   Jenkins   │────▶│Docker Build │
+
+│  git push    │     │   Repo   │     │  Pipeline   │     │  Image      │
+
+└─────────────┘     └──────────┘     └────────────┘     └──────┬──────┘
+
+│
+
+▼
+
+┌─────────────────────────────────────────────────────────┐  ┌──────────────┐
+
+│                  Kubernetes Cluster (Minikube)            │◀─│ Load into    │
+
+│  ┌──────────────────┐        ┌──────────────────┐        │  │ Minikube     │
+
+│  │  Pod 1 (Replica)  │        │  Pod 2 (Replica)  │        │  └──────────────┘
+
+│  │  Node.js:3000      │        │  Node.js:3000      │        │
+
+│  │  Liveness/Ready    │        │  Liveness/Ready    │        │
+
+│  └────────┬─────────┘        └────────┬─────────┘        │
+
+│           │                            │                   │
+
+│           └───────────┬────────────────┘                   │
+
+│                        ▼                                    │
+
+│              ┌──────────────────┐                           │
+
+│              │ Service (NodePort)│                           │
+
+│              │   Port: 30007     │                           │
+
+│              └─────────┬────────┘                           │
+
+└────────────────────────┼────────────────────────────────────┘
+
+▼
+
+┌───────────────┐
+
+│  End User      │
+
+│  Browser       │
+
+└───────────────┘
+
+## Architecture
 ## Pipeline Stages
 
 | Stage | Action |
